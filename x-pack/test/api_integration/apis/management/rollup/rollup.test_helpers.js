@@ -4,7 +4,7 @@
  * you may not use this file except in compliance with the Elastic License.
  */
 
-import { initElasticsearchIndicesHelpers, getRandomString, wait } from './lib';
+import { initElasticsearchIndicesHelpers, getRandomString } from './lib';
 import { API_BASE_PATH, ROLLUP_INDEX_NAME, INDEX_TO_ROLLUP_MAPPINGS } from './constants';
 
 const jobsCreated = [];
@@ -17,11 +17,11 @@ export const registerHelpers = ({ supertest, es }) => {
     return createIndex(indexName, { mappings });
   };
 
-  const getJobPayload = (indexName, id = getRandomString(), rollupIndex = ROLLUP_INDEX_NAME) => ({
+  const getJobPayload = (indexName, id = getRandomString()) => ({
     job: {
       id,
       index_pattern: indexName,
-      rollup_index: rollupIndex,
+      rollup_index: ROLLUP_INDEX_NAME,
       cron: '0 0 0 ? * 7',
       page_size: 1000,
       groups: {
@@ -86,29 +86,9 @@ export const registerHelpers = ({ supertest, es }) => {
       .send({ jobIds });
   };
 
-  const loadJobs = () => supertest.get(`${API_BASE_PATH}/jobs`);
-
-  const waitForJobsToStop = (attempt = 0) => (
-    loadJobs()
-      .then(async ({ body: { jobs } }) => {
-        const jobBeingStopped = jobs.filter(job => job.status.job_state !== 'stopped' && job.status.job_state !== 'started');
-
-        if (!jobBeingStopped.length) {
-          return;
-        }
-
-        if (attempt < 3 && jobBeingStopped.length) {
-          await wait(500);
-          return waitForJobsToStop(++attempt);
-        }
-
-        throw new Error('Error while waiting for Rollup Jobs to stop');
-      }));
-
   const stopAllJobStarted = (jobIds = jobsStarted, attempt = 0) => (
     stopJob(jobIds)
-      .then(waitForJobsToStop)
-      .then(loadJobs)
+      .then(() => supertest.get(`${API_BASE_PATH}/jobs`))
       .then(({ body: { jobs } }) => {
         // We make sure that there are no more jobs started
         // as trying to delete a job that is started will throw an exception
@@ -129,7 +109,7 @@ export const registerHelpers = ({ supertest, es }) => {
           throw response;
         }
       })
-      .then(loadJobs)
+      .then(() => supertest.get(`${API_BASE_PATH}/jobs`))
       .then(({ body: { jobs } }) => {
         if (jobs.length && attempt < 3) {
           // There are still some jobs left to delete.
@@ -155,7 +135,7 @@ export const registerHelpers = ({ supertest, es }) => {
   const cleanUp = () => (
     Promise.all([
       deleteAllIndices(),
-      stopAllJobStarted().then(deleteJobsCreated),
+      stopAllJobStarted().then(() => deleteJobsCreated()),
       deleteIndicesGeneratedByJobs(),
     ]).catch(err => {
       console.log('ERROR cleaning up!');
