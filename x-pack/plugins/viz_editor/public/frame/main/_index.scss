@@ -10,9 +10,9 @@
 
 .lnsSidebar {
   margin: 0;
-  flex: 1 0 ($euiSize * 16);
+  flex: 1 0 18%;
+  min-width: ($euiSize * 16);
   height: 100%;
-  // background-color: $euiColorLightestShade;
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -26,8 +26,12 @@
   }
 }
 
+.lnsSidebar__header {
+  padding: $euiSize 0;
+}
+
 .lnsSidebar__sourceGroup {
-  padding: $euiSize;
+  padding: $euiSizeL $euiSize;
   flex-grow: 0;
 }
 
@@ -35,6 +39,7 @@
   @include euiScrollBar;
   overflow: hidden auto;
   padding: $euiSize;
+  min-width: ($euiSize * 18);
 }
 
 .lnsSidebar--expression {
@@ -68,7 +73,7 @@
 
     .lnsPageContentBody {
       flex-grow: 1;
-      padding: $euiSize;
+      padding: $euiSizeXL;
       display: flex;
       align-items: stretch;
       justify-content: stretch;
@@ -78,6 +83,7 @@
         display: flex;
         align-items: center;
         justify-content: center;
+        overflow-x: hidden;
       }
     }
   }
@@ -86,5 +92,44 @@
 .lnsSidebar__suggestions {
   > * {
     margin-top: $euiSizeS;
+  }
+}
+
+.lnsSidebar__suggestionIcon {
+  width: 100%;
+  min-height: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: $euiSize;
+}
+
+.lnsInspectFlyout__header {
+  padding: $euiSize;
+}
+
+.lnsInspectFlyout__tabbedContent {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+
+  .euiTabs {
+    flex-shrink: 0;
+  }
+
+  [role="tabpanel"] {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+
+    .expressionRenderer-full {
+      min-height: 0;
+    }
+
+    .euiCodeBlock {
+      height: 100%;
+    }
   }
 }

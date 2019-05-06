@@ -4,7 +4,7 @@
  * you may not use this file except in compliance with the Elastic License.
  */
 
-import { EuiFieldNumber, EuiForm, EuiFormRow, EuiIcon, EuiRange, EuiSelect } from '@elastic/eui';
+import { EuiFieldNumber, EuiForm, EuiFormRow, EuiRange, EuiSelect } from '@elastic/eui';
 import React from 'react';
 import {
   AvgOperation,
@@ -22,6 +22,7 @@ import {
   WindowFunction,
   WindowOperation,
 } from '../../../../common';
+import { OperationSummary } from './operation_summary';
 import { operationToName, VisModel } from '../../lib';
 
 const FixedEuiRange = EuiRange as React.ComponentType<any>;
@@ -80,21 +81,22 @@ function fieldOperationEditor(props: OperationEditorProps<FieldOperation>) {
     }));
 
   return (
-    <EuiSelect
-      options={options}
-      value={argument && argument.field}
-      onChange={e =>
-        onOperationChange({
-          ...operation,
-          id: operation.id || e.target.value,
-          argument: {
-            ...argument,
-            field: e.target.value,
-          },
-        } as SelectOperation)
-      }
-      aria-label="Field"
-    />
+    <EuiFormRow label="Field">
+      <EuiSelect
+        options={options}
+        value={argument && argument.field}
+        onChange={e =>
+          onOperationChange({
+            ...operation,
+            id: operation.id || e.target.value,
+            argument: {
+              ...argument,
+              field: e.target.value,
+            },
+          } as SelectOperation)
+        }
+      />
+    </EuiFormRow>
   );
 }
 
@@ -235,10 +237,10 @@ function dateHistogramOperationEditor(props: OperationEditorProps<DateHistogramO
           aria-label="Field"
         />
       </EuiFormRow>
-      <EuiFormRow label="Level of Detail">
+      <EuiFormRow label="Level of detail">
         <FixedEuiRange
           min={0}
-          max={intervals.length}
+          max={intervals.length - 1}
           step={1}
           value={argument && intervalToNumeric(argument.interval)}
           showTicks
@@ -354,10 +356,7 @@ export const operations: PossibleOperationDefinitions[] = [
     },
     summarize(op) {
       return (
-        <span>
-          <EuiIcon type="string" className="lnsConfigPanel__summary-icon" />
-          {`Values of ${op.argument.field}`}
-        </span>
+        <OperationSummary iconType="string" operation="Values" field={op.argument.field} />
       );
     },
   },
@@ -374,10 +373,7 @@ export const operations: PossibleOperationDefinitions[] = [
     },
     summarize(op: CountOperation) {
       return (
-        <span>
-          <EuiIcon type="number" className="lnsConfigPanel__summary-icon" />
-          {` Count`}
-        </span>
+        <OperationSummary iconType="number" operation="Count" field="documents" />
       );
     },
   },
@@ -403,10 +399,7 @@ export const operations: PossibleOperationDefinitions[] = [
     },
     summarize(op: AvgOperation) {
       return (
-        <span>
-          <EuiIcon type="number" className="lnsConfigPanel__summary-icon" />
-          {` Average of ${op.argument.field}`}
-        </span>
+        <OperationSummary iconType="number" operation="Average" field={op.argument.field} />
       );
     },
   },
@@ -433,10 +426,7 @@ export const operations: PossibleOperationDefinitions[] = [
     },
     summarize(op: DateHistogramOperation) {
       return (
-        <span>
-          <EuiIcon type="calendar" className="lnsConfigPanel__summary-icon" />
-          {` Date histogram of ${op.argument.field}`}
-        </span>
+        <OperationSummary iconType="calendar" operation="Date histogram" field={op.argument.field} />
       );
     },
   },
@@ -462,13 +452,7 @@ export const operations: PossibleOperationDefinitions[] = [
     },
     summarize(op: CardinalityOperation) {
       return (
-        <div className="lnsConfigPanel__summary">
-          <EuiIcon type="string" className="lnsConfigPanel__summary-icon" />
-          <div className="lnsConfigPanel__summaryText">
-            <strong className="lnsConfigPanel__summary-title">Unique Values of</strong>
-            <span className="lnsConfigPanel__summarySubtitle">{op.argument.field}</span>
-          </div>
-        </div>
+        <OperationSummary iconType="string" operation="Unique values" field={op.argument.field} />
       );
     },
   },
@@ -495,13 +479,7 @@ export const operations: PossibleOperationDefinitions[] = [
     },
     summarize(op) {
       return (
-        <div className="lnsConfigPanel__summary">
-          <EuiIcon type="string" className="lnsConfigPanel__summary-icon" />
-          <div className="lnsConfigPanel__summaryText">
-            <strong className="lnsConfigPanel__summary-title">Top Values of</strong>
-            <span className="lnsConfigPanel__summarySubtitle">{op.argument.field}</span>
-          </div>
-        </div>
+        <OperationSummary iconType="string" operation="Top values" field={op.argument.field} />
       );
     },
   },
@@ -527,10 +505,7 @@ export const operations: PossibleOperationDefinitions[] = [
     },
     summarize(op: SumOperation) {
       return (
-        <span>
-          <EuiIcon type="number" className="lnsConfigPanel__summary-icon" />
-          {` Sum of ${op.argument.field}`}
-        </span>
+        <OperationSummary iconType="number" operation="Sum" field={op.argument.field} />
       );
     },
   },

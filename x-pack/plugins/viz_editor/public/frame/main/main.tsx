@@ -5,7 +5,7 @@
  */
 
 import {
-  // EuiButtonEmpty,
+  EuiButtonEmpty,
   EuiCodeBlock,
   EuiFlexGroup,
   EuiFlexItem,
@@ -15,7 +15,7 @@ import {
   EuiPageContentHeaderSection,
   EuiPageContentBody,
   EuiButtonIcon,
-  EuiSpacer,
+  EuiTabbedContent,
   // @ts-ignore
   EuiListGroupItem,
   EuiPage,
@@ -39,6 +39,7 @@ import {
   VisModel,
 } from '../..';
 import { ExpressionRenderer } from '../expression_renderer';
+import { EuiIcon } from '@elastic/eui';
 
 type Action =
   | { type: 'loaded' }
@@ -180,7 +181,25 @@ export function Main(props: MainProps) {
 
   const [flyoutIsOpen, setFlyoutIsOpen] = useState(false);
 
-  // TODO: Hook this up
+  const inspectorTabs = [{
+    id: 'rawData',
+    name: 'Raw data',
+    content: (
+      <EuiFlyoutBody>
+        <ExpressionRenderer
+          {...props}
+          expression={getTableExpression(state.visModel)}
+        />
+      </EuiFlyoutBody>
+    )
+  }, {
+    id: 'expression',
+    name: 'Expression',
+    content: (
+      <EuiCodeBlock isCopyable>{expression}</EuiCodeBlock>
+    )
+  }];
+
   let flyout;
   if (flyoutIsOpen) {
     flyout = (
@@ -188,28 +207,19 @@ export function Main(props: MainProps) {
         onClose={() => { setFlyoutIsOpen(false); }}
         aria-labelledby="lnsInspectFlyoutTitle"
       >
-        <EuiFlyoutHeader hasBorder>
+        <EuiFlyoutHeader className="lnsInspectFlyout__header">
           <EuiTitle size="m">
             <h2 id="lnsInspectFlyoutTitle">
               Inspector
             </h2>
           </EuiTitle>
-          <EuiSpacer size="s" />
-          {/* <EuiTabs style={{ marginBottom: '-25px' }}>
-            {this.renderTabs()}
-          </EuiTabs> */}
         </EuiFlyoutHeader>
-        <EuiFlyoutBody>
-          {hasData && (
-            <>
-              <ExpressionRenderer
-                {...props}
-                expression={getTableExpression(state.visModel)}
-              />
-              <EuiCodeBlock>{expression}</EuiCodeBlock>
-            </>
-          )}
-        </EuiFlyoutBody>
+        <EuiTabbedContent
+          className="lnsInspectFlyout__tabbedContent"
+          tabs={inspectorTabs}
+          initialSelectedTab={inspectorTabs[0]}
+          onTabClick={(tab) => { console.log('clicked tab', tab); }}
+        />
       </EuiFlyout>
     );
   }
@@ -219,7 +229,7 @@ export function Main(props: MainProps) {
     <EuiPage className="lnsPage">
       {!state.metadata.expressionMode && (
         <EuiPageSideBar className="lnsSidebar">
-          <EuiFlexGroup className="lnsSidebar__sourceGroup" gutterSize="s" alignItems="center">
+          <EuiFlexGroup className="lnsSidebar__sourceGroup lnsSidebar__header" gutterSize="s" alignItems="center">
             <EuiFlexItem>
               <EuiTitle size="xs"><h2>Source: </h2></EuiTitle>
             </EuiFlexItem>
@@ -254,7 +264,6 @@ export function Main(props: MainProps) {
               </EuiTitle>
             </EuiPageContentHeaderSection>
             <EuiPageContentHeaderSection>
-              {/* TODO: Hook up to flyout*/}
               <EuiButtonIcon
                 onClick={() => { setFlyoutIsOpen(true); }}
                 iconType="inspect"
@@ -265,6 +274,7 @@ export function Main(props: MainProps) {
                 title={i18n.translate('xpack.viz_editor.frame.inspectButtonLabel', {
                     defaultMessage: "Inspect"
                 })}
+                isDisabled={!hasData}
               />&emsp;
               <EuiButtonIcon
                 iconType="editorCodeBlock"
@@ -318,6 +328,13 @@ export function Main(props: MainProps) {
           />
         ) : (
           <>
+            <div className="lnsSidebar__header">
+              {/* Hook up the button to allow user to force into a particular chart type and stay there (don't switch chart types when changing data) */}
+              <EuiTitle size="xs">
+                <h3>{'Auto' || panelProps.visModel.editorPlugin} <EuiButtonEmpty size="xs" disabled>(change)</EuiButtonEmpty></h3>
+              </EuiTitle>
+            </div>
+
             <ConfigPanel {...panelProps} />
 
             {hasData && (
@@ -336,12 +353,21 @@ export function Main(props: MainProps) {
                     }}
                     paddingSize="s"
                   >
-                    {suggestion.title}
-                    <ExpressionRenderer
-                      {...props}
-                      expression={suggestion.previewExpression}
-                      size="preview"
-                    />
+                    <EuiTitle size="xxxs">
+                      <h4>{suggestion.title}</h4>
+                    </EuiTitle>
+                    {/* Hack for now, but should actually check if the previewExpression is valid */}
+                    {suggestion.previewExpression.endsWith('| icon') ? (
+                      <div className="lnsSidebar__suggestionIcon">
+                        <EuiIcon size="xxl" color="subdued" type={suggestion.iconType} />
+                      </div>
+                    ) : (
+                      <ExpressionRenderer
+                        {...props}
+                        expression={suggestion.previewExpression}
+                        size="preview"
+                      />
+                    )}
                   </EuiPanel>
                 ))}
               </div>

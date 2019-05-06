@@ -4,7 +4,7 @@
  * you may not use this file except in compliance with the Elastic License.
  */
 
-import { EuiButtonToggle, EuiLink, EuiPopover } from '@elastic/eui';
+import { EuiButtonIcon, EuiLink, EuiPopover } from '@elastic/eui';
 import { EuiSideNav } from '@elastic/eui';
 import { EuiFlexGroup } from '@elastic/eui';
 import { EuiFlexItem } from '@elastic/eui';
@@ -64,7 +64,7 @@ export function OperationEditor<T extends SelectOperation>(props: OperationEdito
       canHandleDrop={(f: DatasourceField) => (canDrop ? canDrop(f) : true)}
       onDrop={onDropField}
     >
-      <EuiLink onClick={() => setState({ ...state, isOpen: !state.isOpen })}>{children}</EuiLink>
+      <EuiLink className="lnsConfigPanel__summaryLink" color="text" onClick={() => setState({ ...state, isOpen: !state.isOpen })}>{children}</EuiLink>
     </Draggable>
   );
   const changeOperation = (operationType: SelectOperator) => {
@@ -98,37 +98,39 @@ export function OperationEditor<T extends SelectOperation>(props: OperationEdito
     | undefined;
 
   const subEditor = SubEditor ? (
-    <EuiFlexItem>
+    <EuiFlexItem className="lnsConfigPanel__summaryPopoverRight">
       <SubEditor {...props} />
     </EuiFlexItem>
   ) : null;
 
   return (
-    <>
+    <div className="lnsConfigPanel__summary">
       <EuiPopover
+        className="lnsConfigPanel__summaryPopover"
         id="contextMenu"
         button={button}
         isOpen={state.isOpen}
         closePopover={close}
         anchorPosition="leftUp"
         withTitle
+        panelPaddingSize="s"
       >
-        <EuiFlexGroup>
-          <EuiFlexItem grow={!subEditor}>
+        <EuiFlexGroup gutterSize="s">
+          <EuiFlexItem grow={!subEditor} className={`lnsConfigPanel__summaryPopoverLeft ${subEditor && 'lnsConfigPanel__summaryPopoverLeft--shaded'}`}>
             <EuiSideNav items={sideNavItems} />
           </EuiFlexItem>
           {subEditor}
         </EuiFlexGroup>
       </EuiPopover>
       {removable && (
-        <EuiButtonToggle
+        <EuiButtonIcon
           iconType="cross"
-          label="Remove"
-          isIconOnly
-          isEmpty
-          onChange={onOperationRemove}
+          iconSize="s"
+          color="danger"
+          aria-label="Remove"
+          onClick={onOperationRemove}
         />
       )}
-    </>
+    </div>
   );
 }

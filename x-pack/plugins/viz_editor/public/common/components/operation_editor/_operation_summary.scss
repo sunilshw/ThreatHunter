@@ -1,0 +1,31 @@
+.lnsConfigPanel__summary {
+  @include euiFontSizeS;
+  background: $euiColorEmptyShade;
+  border-radius: $euiBorderRadius;
+  display: flex;
+  align-items: center;
+  margin-top: $euiSizeXS;
+  padding: $euiSizeXS;
+}
+
+.lnsConfigPanel__summaryPopover {
+  flex-grow: 1;
+  line-height: 0;
+}
+
+.lnsConfigPanel__summaryIcon {
+  margin-right: $euiSizeXS;
+}
+
+.lnsConfigPanel__summaryLink {
+  display: flex;
+  padding: $euiSizeS $euiSizeXS;
+
+  > span {
+    flex-grow: 1;
+  }
+}
+
+.lnsConfigPanel__summaryField {
+  color: $euiColorPrimary;
+}

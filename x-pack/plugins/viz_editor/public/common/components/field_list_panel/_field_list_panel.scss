@@ -1,0 +1,40 @@
+.lnsFieldListPanel {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.lnsFieldListPanel__searchWrapper {
+  padding: $euiSize $euiSize 0;
+}
+
+.lnsFieldListPanel__list {
+  @include euiOverflowShadow($euiPageBackgroundColor);
+  overflow: visible hidden;
+  margin-top: 2px; // form control shadow
+
+  .lnsFieldListPanel__listOverflow {
+    @include euiScrollBar;
+    overflow: visible auto;
+    height: 100%;
+    padding: $euiSizeS $euiSize;
+  }
+}
+
+.lnsFieldListPanel__field {
+  @include lnsDragAndDropItem;
+  margin-bottom: $euiSizeXS;
+  font-weight: $euiFontWeightMedium;
+  transition: box-shadow $euiAnimSpeedFast $euiAnimSlightResistance;
+
+  &:hover {
+    @include euiBottomShadowMedium;
+    z-index: 2;
+    cursor: grab;
+  }
+}
+
+.lnsFieldListPanel__fieldName {
+  @include euiTextTruncate;
+  margin-left: $euiSizeXS;
+}
