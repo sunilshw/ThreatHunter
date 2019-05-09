@@ -41,8 +41,13 @@ export function FieldListPanel({ visModel }: VisualizationPanelProps) {
   const [state, setState] = useState(() => initialState());
 
   function filterFields(field: DatasourceField) {
-    return field.name.toLowerCase().includes(state.fieldsFilter.toLowerCase());
+    const supportedFieldTypes = ['string', 'number', 'boolean', 'date'];
+    return (
+      field.name.toLowerCase().includes(state.fieldsFilter.toLowerCase()) &&
+      supportedFieldTypes.includes(field.type)
+    );
   }
+
   if (datasource === null) {
     return <div />;
   }
@@ -77,7 +82,9 @@ export function FieldListPanel({ visModel }: VisualizationPanelProps) {
                     draggable={true}
                     value={field}
                     key={field.name}
-                    className={`lnsFieldListPanel__field lnsFieldListPanel__field-btn-${field.type}`}
+                    className={`lnsFieldListPanel__field lnsFieldListPanel__field-btn-${
+                      field.type
+                    }`}
                   >
                     {fieldIcon(field)}
                     <span className="lnsFieldListPanel__fieldName" title={field.name}>
@@ -116,7 +123,5 @@ function fieldIcon({ type }: { type: string }): any {
     `lnsFieldListPanel__fieldIcon--${type}`
   );
 
-  return (
-    <EuiIcon type={iconType} color={colors[colorIndex]} className={classes} />
-  );
+  return <EuiIcon type={iconType} color={colors[colorIndex]} className={classes} />;
 }

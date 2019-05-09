@@ -24,6 +24,7 @@ import { getTypeForOperation } from '../../common';
 import { AngleAxisEditor } from './angleaxis_editor';
 import { SliceAxisEditor } from './sliceaxis_editor';
 import { PieChartVisModel, PLUGIN_NAME, updatePieState } from './types';
+import { DroppablePane } from '../../frame/main/droppable_pane';
 
 function lnsConfigPanel({
   visModel,
@@ -64,6 +65,15 @@ function lnsConfigPanel({
     </>
   );
 }
+
+function WorkspacePanel({ children, ...props }: any) {
+  return (
+    <DroppablePane {...props}>
+      {children}
+    </DroppablePane>
+  );
+}
+
 
 function toExpression(viewState: PieChartVisModel, mode: 'preview' | 'view' | 'edit' = 'view') {
   const legacyConfig = {
@@ -208,6 +218,7 @@ export const config: EditorPlugin<PieChartVisModel> = {
   name: PLUGIN_NAME,
   toExpression,
   ConfigPanel: lnsConfigPanel,
+  WorkspacePanel,
   getChartSuggestions: visModel => getSuggestions(visModel),
   getSuggestionsForField,
   // this part should check whether the x and y axes have to be initialized in some way

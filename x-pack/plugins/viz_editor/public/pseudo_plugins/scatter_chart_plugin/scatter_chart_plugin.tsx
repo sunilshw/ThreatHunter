@@ -25,6 +25,7 @@ import {
 } from '../../../public';
 import { getTypeForOperation, isApplicableForCardinality } from '../../common';
 import { AxisEditor } from './axis_editor';
+import { DroppablePane } from '../../frame/main/droppable_pane';
 
 interface ScatterChartPrivateState {
   xAxis: Axis;
@@ -77,6 +78,14 @@ function lnsConfigPanel({
         ))}
       </div>
     </>
+  );
+}
+
+function WorkspacePanel({ children, ...props }: any) {
+  return (
+    <DroppablePane {...props}>
+      {children}
+    </DroppablePane>
   );
 }
 
@@ -321,6 +330,7 @@ export const config: EditorPlugin<ScatterChartVisModel> = {
   name: 'xy_chart',
   toExpression,
   ConfigPanel: lnsConfigPanel,
+  WorkspacePanel,
   getChartSuggestions,
   getSuggestionsForField,
   // this part should check whether the x and y axes have to be initialized in some way

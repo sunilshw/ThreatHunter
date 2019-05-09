@@ -557,8 +557,12 @@ export function getFieldName(
   const field = fields[0];
   const argument = (currentOperation as FieldOperation).argument;
 
+  if (argument && argument.field && fields.some(({ name }) => name === argument.field)) {
+    return argument.field;
+  }
+
   // TODO: What should we do if there is no applicable field?
-  return (argument && argument.field) || (field && field.name) || 'N/A';
+  return (field && field.name) || 'N/A';
 }
 
 export const getOperationName = (operator: SelectOperator) => {

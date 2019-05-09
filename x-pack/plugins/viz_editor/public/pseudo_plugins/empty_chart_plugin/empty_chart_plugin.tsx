@@ -4,8 +4,7 @@
  * you may not use this file except in compliance with the Elastic License.
  */
 
-import { EuiFlexGroup } from '@elastic/eui';
-import { EuiFlexItem, EuiTextColor } from '@elastic/eui';
+import { EuiTextColor } from '@elastic/eui';
 import React from 'react';
 import {
   EditorPlugin,

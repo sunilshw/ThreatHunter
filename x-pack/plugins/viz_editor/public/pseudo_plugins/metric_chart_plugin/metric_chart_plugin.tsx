@@ -130,7 +130,7 @@ function buildSuggestion(visModel: MetricChartVisModel, score: number = 0.5) {
 function getChartSuggestions(visModel: MetricChartVisModel): Suggestion[] {
   const firstQuery = Object.values(visModel.queries)[0];
 
-  if (!firstQuery || firstQuery.select.length > 1 || firstQuery.select.length === 0) {
+  if (!firstQuery || firstQuery.select.length > 1 || firstQuery.select.length === 0 || visModel.editorPlugin === PLUGIN_NAME) {
     return [];
   }
 
