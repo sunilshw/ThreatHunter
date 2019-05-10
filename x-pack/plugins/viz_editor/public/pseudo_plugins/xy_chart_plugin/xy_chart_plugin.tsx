@@ -12,6 +12,7 @@ import {
   EuiButtonGroup,
 } from '@elastic/eui';
 import React from 'react';
+import { EuiSpacer } from '@elastic/eui';
 import { DatasourceField, fieldToOperation, SelectOperation } from '../../../common';
 import {
   EditorPlugin,
@@ -28,7 +29,6 @@ import { prefillPrivateState, updateXyState } from './state_helpers';
 import { PLUGIN_NAME, XyChartVisModel, XyDisplayType } from './types';
 import { XAxisEditor } from './xaxis_editor';
 import { YAxisEditor } from './yaxis_editor';
-import { EuiSpacer } from '@elastic/eui';
 
 function lnsConfigPanel({
   visModel,
@@ -74,7 +74,7 @@ function lnsConfigPanel({
           options={displayOptions}
           idSelected={displayType || 'line'}
           isFullWidth
-          onChange={(id) => {
+          onChange={id => {
             const updatedVisModel = updateXyState(visModel, { displayType: id as XyDisplayType });
             onChangeVisModel(updatedVisModel);
           }}

@@ -64,7 +64,13 @@ export function OperationEditor<T extends SelectOperation>(props: OperationEdito
       canHandleDrop={(f: DatasourceField) => (canDrop ? canDrop(f) : true)}
       onDrop={onDropField}
     >
-      <EuiLink className="lnsConfigPanel__summaryLink" color="text" onClick={() => setState({ ...state, isOpen: !state.isOpen })}>{children}</EuiLink>
+      <EuiLink
+        className="lnsConfigPanel__summaryLink"
+        color="text"
+        onClick={() => setState({ ...state, isOpen: !state.isOpen })}
+      >
+        {children}
+      </EuiLink>
     </Draggable>
   );
   const changeOperation = (operationType: SelectOperator) => {
@@ -107,6 +113,7 @@ export function OperationEditor<T extends SelectOperation>(props: OperationEdito
     <div className="lnsConfigPanel__summary">
       <EuiPopover
         className="lnsConfigPanel__summaryPopover"
+        anchorClassName="lnsConfigPanel__summaryPopoverAnchor"
         id="contextMenu"
         button={button}
         isOpen={state.isOpen}
@@ -116,7 +123,11 @@ export function OperationEditor<T extends SelectOperation>(props: OperationEdito
         panelPaddingSize="s"
       >
         <EuiFlexGroup gutterSize="s">
-          <EuiFlexItem grow={!subEditor} className={`lnsConfigPanel__summaryPopoverLeft ${subEditor && 'lnsConfigPanel__summaryPopoverLeft--shaded'}`}>
+          <EuiFlexItem
+            grow={!subEditor}
+            className={`lnsConfigPanel__summaryPopoverLeft ${subEditor &&
+              'lnsConfigPanel__summaryPopoverLeft--shaded'}`}
+          >
             <EuiSideNav items={sideNavItems} />
           </EuiFlexItem>
           {subEditor}

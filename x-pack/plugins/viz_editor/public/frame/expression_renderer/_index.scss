@@ -11,7 +11,7 @@
 }
 
 .expressionRenderer-preview {
-  @include euiOverflowShadow;
+  // @include euiOverflowShadow;
   display: flex;
   flex-direction: column;
   overflow: hidden;

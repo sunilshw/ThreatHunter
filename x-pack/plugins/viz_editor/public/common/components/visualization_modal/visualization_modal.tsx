@@ -11,11 +11,12 @@ import {
   EuiFlexGroup,
   EuiFlexItem,
   EuiModal,
-  EuiModalBody,
+  EuiTitle,
+  EuiModalHeader,
+  EuiModalHeaderTitle,
   EuiOverlayMask,
   EuiPanel,
   EuiSpacer,
-  EuiText,
 } from '@elastic/eui';
 import React, { useState } from 'react';
 import { Suggestion } from '../../../editor_plugin_registry';
@@ -53,59 +54,71 @@ export function VisualizationModal({
   return (
     <>
       <EuiOverlayMask>
-        <EuiModal onClose={onClose} maxWidth={false} initialFocus="[name=popswitch]">
-          <EuiModalBody>
-            <EuiText>
-              <h1>{title}</h1>
-            </EuiText>
-            <EuiSpacer size="m" />
-            <EuiFlexGroup className="visualizationModal">
-              <EuiFlexItem grow={false}>
-                <EuiFacetGroup style={{ maxWidth: 200 }}>
+        <EuiModal
+          className="lnsVisualizationModal"
+          onClose={onClose}
+          initialFocus="[name=popswitch]"
+          maxWidth="75vw"
+        >
+          <EuiModalHeader>
+            <EuiModalHeaderTitle>{title}</EuiModalHeaderTitle>
+          </EuiModalHeader>
+
+          <EuiFlexGroup gutterSize="none" className="lnsVisualizationModal__body">
+            <EuiFlexItem grow={false} className="lnsVisualizationModal__facetsHolder">
+              <EuiFacetGroup>
+                <EuiFacetButton
+                  onClick={() => {
+                    setFilter(null);
+                  }}
+                  buttonRef={null as any}
+                  quantity={suggestions.length}
+                  isSelected={!filter}
+                >
+                  All Suggestions
+                </EuiFacetButton>
+                <EuiSpacer size="m" />
+                {Object.entries(suggestionCategoryMap).map(([category, categorySuggestions]) => (
                   <EuiFacetButton
+                    key={category}
                     onClick={() => {
-                      setFilter(null);
+                      setFilter(category);
                     }}
                     buttonRef={null as any}
-                    quantity={suggestions.length}
-                    isSelected={!filter}
+                    quantity={categorySuggestions.length}
+                    isSelected={filter === category}
                   >
-                    All Suggestions
+                    {category === 'line' ? 'XY chart' : category}
                   </EuiFacetButton>
-                  {Object.entries(suggestionCategoryMap).map(([category, categorySuggestions]) => (
-                    <EuiFacetButton
-                      key={category}
-                      onClick={() => {
-                        setFilter(category);
-                      }}
-                      buttonRef={null as any}
-                      quantity={categorySuggestions.length}
-                      isSelected={filter === category}
+                ))}
+              </EuiFacetGroup>
+            </EuiFlexItem>
+            <EuiFlexItem className="lnsVisualizationModal__suggestions">
+              <EuiFlexGrid columns={3}>
+                {(filter ? suggestionCategoryMap[filter] : suggestions).map(suggestion => (
+                  <EuiFlexItem key={suggestion.title} grow={true}>
+                    <EuiPanel
+                      className="lnsVisualizationModal__suggestion"
+                      onClick={() => onSelect(suggestion.visModel)}
+                      paddingSize="s"
                     >
-                      {category}
-                    </EuiFacetButton>
-                  ))}
-                </EuiFacetGroup>
-              </EuiFlexItem>
-              <EuiFlexItem className="visualizationModal_suggestions">
-                <EuiFlexGrid columns={3}>
-                  {(filter ? suggestionCategoryMap[filter] : suggestions).map(suggestion => (
-                    <EuiFlexItem key={suggestion.title}>
-                      <EuiPanel onClick={() => onSelect(suggestion.visModel)} paddingSize="s">
-                        {suggestion.title}
+                      <span>
+                        <EuiTitle size="xxxs" className="lnsVisualizationModal__suggestionTitle">
+                          <span>{suggestion.title}</span>
+                        </EuiTitle>
                         <ExpressionRenderer
                           getInterpreter={getInterpreter}
                           renderersRegistry={renderersRegistry}
                           expression={suggestion.previewExpression}
                           size="preview"
                         />
-                      </EuiPanel>
-                    </EuiFlexItem>
-                  ))}
-                </EuiFlexGrid>
-              </EuiFlexItem>
-            </EuiFlexGroup>
-          </EuiModalBody>
+                      </span>
+                    </EuiPanel>
+                  </EuiFlexItem>
+                ))}
+              </EuiFlexGrid>
+            </EuiFlexItem>
+          </EuiFlexGroup>
         </EuiModal>
       </EuiOverlayMask>
     </>

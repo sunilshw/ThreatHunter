@@ -67,13 +67,8 @@ function lnsConfigPanel({
 }
 
 function WorkspacePanel({ children, ...props }: any) {
-  return (
-    <DroppablePane {...props}>
-      {children}
-    </DroppablePane>
-  );
+  return <DroppablePane {...props}>{children}</DroppablePane>;
 }
-
 
 function toExpression(viewState: PieChartVisModel, mode: 'preview' | 'view' | 'edit' = 'view') {
   const legacyConfig = {
@@ -206,7 +201,7 @@ function getSuggestionsForField(
       previewExpression: toExpression(prefilledVisModel, 'preview'),
       score: field.type === 'boolean' ? 0.9 : 0.5,
       visModel: prefilledVisModel,
-      title: `Pie Chart: ${formattedNameSlice} of ${field.name} vs ${formattedNameSize}`,
+      title: `${formattedNameSlice} of ${field.name} vs ${formattedNameSize}`,
       iconType: 'visPie' as IconType,
       pluginName: PLUGIN_NAME,
       category: 'Pie chart',

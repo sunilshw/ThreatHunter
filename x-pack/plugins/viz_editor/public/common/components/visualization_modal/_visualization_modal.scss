@@ -1,0 +1,25 @@
+.lnsVisualizationModal {
+  height: 75vh;
+  width: 75vw;
+}
+
+.lnsVisualizationModal__body {
+  background-color: $euiColorLightestShade;
+  border-radius: $euiBorderRadius;
+  margin: 0 $euiSize $euiSize;
+  overflow: hidden;
+}
+
+.lnsVisualizationModal__suggestions,
+.lnsVisualizationModal__facetsHolder {
+  @include euiScrollBar;
+  overflow: hidden auto;
+  padding: $euiSize;
+}
+
+.lnsVisualizationModal__suggestionTitle {
+  display: block;
+  line-height: $euiSize;
+  margin-bottom: $euiSizeS;
+}
+
