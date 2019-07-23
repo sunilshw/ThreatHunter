@@ -71,11 +71,6 @@ import { getRootBreadcrumbs, getSavedSearchBreadcrumbs } from '../breadcrumbs';
 import { buildVislibDimensions } from 'ui/visualize/loader/pipeline_helpers/build_pipeline';
 import 'ui/capabilities/route_setup';
 
-import { data } from 'plugins/data/setup';
-data.search.loadLegacyDirectives();
-
-const { savedQueryService } = data.search.services;
-
 const fetchStatuses = {
   UNINITIALIZED: 'uninitialized',
   LOADING: 'loading',
@@ -83,7 +78,6 @@ const fetchStatuses = {
 };
 
 const app = uiModules.get('apps/discover', [
-  'kibana/notify',
   'kibana/courier',
   'kibana/url',
   'kibana/index_patterns'
@@ -247,7 +241,7 @@ function discoverController(
 
   const getTopNavLinks = () => {
     const newSearch = {
-      key: 'new',
+      id: 'new',
       label: i18n.translate('kbn.discover.localMenu.localMenu.newSearchTitle', {
         defaultMessage: 'New',
       }),
@@ -259,7 +253,7 @@ function discoverController(
     };
 
     const saveSearch = {
-      key: 'save',
+      id: 'save',
       label: i18n.translate('kbn.discover.localMenu.saveTitle', {
         defaultMessage: 'Save',
       }),
@@ -299,7 +293,7 @@ function discoverController(
     };
 
     const openSearch = {
-      key: 'open',
+      id: 'open',
       label: i18n.translate('kbn.discover.localMenu.openTitle', {
         defaultMessage: 'Open',
       }),
@@ -317,7 +311,7 @@ function discoverController(
     };
 
     const shareSearch = {
-      key: 'share',
+      id: 'share',
       label: i18n.translate('kbn.discover.localMenu.shareTitle', {
         defaultMessage: 'Share',
       }),
@@ -325,7 +319,7 @@ function discoverController(
         defaultMessage: 'Share Search',
       }),
       testId: 'shareTopNavButton',
-      run: async (menuItem, navController, anchorElement) => { // eslint-disable-line no-unused-vars
+      run: async (anchorElement) => {
         const sharingData = await this.getSharingData();
         showShareContextMenu({
           anchorElement,
@@ -345,7 +339,7 @@ function discoverController(
     };
 
     const inspectSearch = {
-      key: 'inspect',
+      id: 'inspect',
       label: i18n.translate('kbn.discover.localMenu.inspectTitle', {
         defaultMessage: 'Inspect',
       }),

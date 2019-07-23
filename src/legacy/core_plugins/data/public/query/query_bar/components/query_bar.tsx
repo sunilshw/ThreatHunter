@@ -18,7 +18,6 @@
  */
 
 import { doesKueryExpressionHaveLuceneSyntaxError } from '@kbn/es-query';
-import { IndexPattern } from 'ui/index_patterns';
 
 import classNames from 'classnames';
 import React, { Component } from 'react';
@@ -35,6 +34,7 @@ import { documentationLinks } from 'ui/documentation_links';
 import { Toast, toastNotifications } from 'ui/notify';
 import chrome from 'ui/chrome';
 import { PersistedLog } from 'ui/persisted_log';
+import { IndexPattern } from '../../../index_patterns';
 import { QueryBarInput } from './query_bar_input';
 
 import { getQueryLog } from '../lib/get_query_log';
@@ -49,17 +49,18 @@ interface DateRange {
 }
 
 interface Props {
-  query: Query;
+  query?: Query;
   savedQuery?: SavedQueryAttributes;
-  onSubmit: (payload: { dateRange: DateRange; query: Query }) => void;
+  onSubmit: (payload: { dateRange: DateRange; query?: Query }) => void;
   onChange: (payload: { dateRange: DateRange; query: Query }) => void;
   disableAutoFocus?: boolean;
   appName: string;
-  screenTitle: string;
-  indexPatterns: Array<IndexPattern | string>;
+  screenTitle?: string;
+  indexPatterns?: Array<IndexPattern | string>;
   store: Storage;
   intl: InjectedIntl;
   prepend?: React.ReactNode;
+  showQueryInput?: boolean;
   showDatePicker?: boolean;
   dateRangeFrom?: string;
   dateRangeTo?: string;
@@ -81,6 +82,12 @@ interface State {
 }
 
 export class QueryBarUI extends Component<Props, State> {
+  public static defaultProps = {
+    showQueryInput: true,
+    showDatePicker: true,
+    showAutoRefreshOnly: false,
+  };
+
   public state = {
     isDateRangeInvalid: false,
   };
@@ -90,7 +97,7 @@ export class QueryBarUI extends Component<Props, State> {
   private persistedLog: PersistedLog | undefined;
 
   public onClickSubmitButton = (event: React.MouseEvent<HTMLButtonElement>) => {
-    if (this.persistedLog) {
+    if (this.persistedLog && this.props.query) {
       this.persistedLog.add(this.props.query.query);
     }
     event.preventDefault();
@@ -112,11 +119,11 @@ export class QueryBarUI extends Component<Props, State> {
   };
 
   public onTimeChange = ({
-    start,
-    end,
-    isInvalid,
-    isQuickSelection,
-  }: {
+                           start,
+                           end,
+                           isInvalid,
+                           isQuickSelection,
+                         }: {
     start: string;
     end: string;
     isInvalid: boolean;
@@ -159,10 +166,12 @@ export class QueryBarUI extends Component<Props, State> {
   };
 
   public componentDidMount() {
+    if (!this.props.query) return;
     this.persistedLog = getQueryLog(this.props.appName, this.props.query.language);
   }
 
   public componentDidUpdate(prevProps: Props) {
+    if (!this.props.query || !prevProps.query) return;
     if (prevProps.query.language !== this.props.query.language) {
       this.persistedLog = getQueryLog(this.props.appName, this.props.query.language);
     }
@@ -175,11 +184,11 @@ export class QueryBarUI extends Component<Props, State> {
 
     return (
       <EuiFlexGroup className={classes} responsive={!!this.props.showDatePicker} gutterSize="s">
-        <EuiFlexItem>
+        {this.shouldRenderQueryInput() && <EuiFlexItem>
           <QueryBarInput
             appName={this.props.appName}
             disableAutoFocus={this.props.disableAutoFocus}
-            indexPatterns={this.props.indexPatterns}
+            indexPatterns={this.props.indexPatterns!}
             prepend={this.props.prepend}
             query={this.props.query}
             screenTitle={this.props.screenTitle}
@@ -195,10 +204,18 @@ export class QueryBarUI extends Component<Props, State> {
             isDirty={this.props.isDirty}
             onClearSavedQuery={this.props.onClearSavedQuery}
           />
-        </EuiFlexItem>
+        </EuiFlexItem>}
         <EuiFlexItem grow={false}>{this.renderUpdateButton()}</EuiFlexItem>
       </EuiFlexGroup>
     );
+  }
+
+  private shouldRenderDatePicker() {
+    return this.props.showDatePicker || this.props.showAutoRefreshOnly;
+  }
+
+  private shouldRenderQueryInput() {
+    return this.props.showQueryInput && this.props.indexPatterns && this.props.query;
   }
 
   private renderUpdateButton() {
@@ -213,7 +230,7 @@ export class QueryBarUI extends Component<Props, State> {
       />
     );
 
-    if (!this.props.showDatePicker) {
+    if (!this.shouldRenderDatePicker()) {
       return button;
     }
 
@@ -226,7 +243,7 @@ export class QueryBarUI extends Component<Props, State> {
   }
 
   private renderDatePicker() {
-    if (!this.props.showDatePicker) {
+    if (!this.shouldRenderDatePicker()) {
       return null;
     }
 
@@ -269,6 +286,7 @@ export class QueryBarUI extends Component<Props, State> {
   }
 
   private handleLuceneSyntaxWarning() {
+    if (!this.state.query) return;
     const { intl, store } = this.props;
     const { query, language } = this.props.query;
     if (
